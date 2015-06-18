@@ -31,6 +31,7 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
         return true;
     }
 
@@ -56,8 +57,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void openPreferredLocationInMap() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String location = prefs.getString(
-                getString(R.string.pref_location_key),
+        String location = prefs.getString(getString(R.string.pref_location_key),
                 getString(R.string.pref_location_default));
 
         // Using the URI scheme for showing a location found on a map.  This super-handy

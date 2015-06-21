@@ -15,6 +15,7 @@ public class MainActivity extends ActionBarActivity {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,9 +51,49 @@ public class MainActivity extends ActionBarActivity {
         } else if (id == R.id.action_map) {
             openPreferredLocationInMap();
             return true;
+        } else if (id == R.id.action_debug_daily) {
+            openUrlInBrowser(false);
+            return true;
+        } else if (id == R.id.action_debug_detailed) {
+            openUrlInBrowser(true);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openUrlInBrowser(boolean detailed) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+
+
+        Uri queryUri;
+        if (detailed){
+            queryUri = Uri.parse(JsonWeatherExtractor.DETAIL_QUERY_URL).buildUpon()
+                    .appendQueryParameter(JsonWeatherExtractor.QUERY_PARAM, location)
+                    .appendQueryParameter(JsonWeatherExtractor.FORMAT_PARAM, "xml")
+                    .appendQueryParameter(JsonWeatherExtractor.UNITS_PARAM, "metric")
+                    .build();
+        } else {
+            queryUri = Uri.parse(JsonWeatherExtractor.DAILY_QUERY_URL).buildUpon()
+                    .appendQueryParameter(JsonWeatherExtractor.QUERY_PARAM, location)
+                    .appendQueryParameter(JsonWeatherExtractor.FORMAT_PARAM, "xml")
+                    .appendQueryParameter(JsonWeatherExtractor.UNITS_PARAM, "metric")
+                    .appendQueryParameter(JsonWeatherExtractor.DAYS_PARAM, Integer.toString(JsonWeatherExtractor.NUM_DAYS))
+                    .build();
+        }
+
+
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(queryUri);
+
+        if (intent.resolveActivity(getPackageManager()) != null){
+            startActivity(intent);
+        } else {
+            Log.d(LOG_TAG, "Couldn't call " + location + ", no receiving apps installed!");
+        }
     }
 
     private void openPreferredLocationInMap() {

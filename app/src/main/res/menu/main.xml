@@ -11,5 +11,13 @@
         android:id="@+id/action_map"
         android:title="@string/action_map"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_debug_daily"
+        android:title="@string/action_debug_daily"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_debug_detailed"
+        android:title="@string/action_debug_detailed"
+        app:showAsAction="never" />
 
 </menu>

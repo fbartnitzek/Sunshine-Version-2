@@ -14,9 +14,17 @@ public class DetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        // use uri from mainActivity to create detail fragment enriched with uri
+        Bundle args = new Bundle();
+        args.putParcelable(DetailActivityFragment.DETAIL_URI, getIntent().getData());
+
+        DetailActivityFragment fragment = new DetailActivityFragment();
+        fragment.setArguments(args);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailActivityFragment())
+//                    .add(R.id.weather_detail_container, new DetailActivityFragment())
+                    .add(R.id.weather_detail_container, fragment)
                     .commit();
         }
     }

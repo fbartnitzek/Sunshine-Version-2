@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
@@ -35,7 +36,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        SharedPreferences.OnSharedPreferenceChangeListener {
+
 
     private static final String SELECTED_KEY = "SELECTED_POSITION";
     private static final String LOG_TAG = ForecastFragment.class.getSimpleName();
@@ -76,6 +79,27 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private ListView mListview;
     private boolean mUseTodayLayout;
 
+    @Override
+    public void onResume() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (getString(R.string.pref_location_key).equals(key)) {
+            updateEmptyView();
+        }
+    }
+
 
     public interface Callback {
         /**
@@ -84,10 +108,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         public void onItemSelected(Uri dateUri);
     }
 
-    public ForecastFragment() {}
+    public ForecastFragment() {
+    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState){    //before onCreateView
+    public void onCreate(Bundle savedInstanceState) {    //before onCreateView
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -99,7 +124,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 //    }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.forecastfragment, menu);
     }
@@ -160,7 +185,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     public void setUseTodayLayout(boolean useTodayLayout) {
         mUseTodayLayout = useTodayLayout;
-        if (mForecastAdapter != null){
+        if (mForecastAdapter != null) {
             mForecastAdapter.setmUseTodayLayout(mUseTodayLayout);
         }
     }
@@ -173,7 +198,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         mForecastAdapter.setmUseTodayLayout(mUseTodayLayout);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
         mListview = (ListView) rootView.findViewById(R.id.listview_forecast);
+        View emptyView = rootView.findViewById(R.id.listview_forecast_empty);
+        mListview.setEmptyView(emptyView);
         mListview.setAdapter(mForecastAdapter);
 
         // We'll call our MainActivity
@@ -251,16 +279,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mForecastAdapter.swapCursor(data);
 
-        if (mPosition != ListView.INVALID_POSITION){
+        if (mPosition != ListView.INVALID_POSITION) {
             mListview.smoothScrollToPosition(mPosition);
         }
+        updateEmptyView();
 
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         // store selected item - can be restored on rotation
-        if (mPosition != ListView.INVALID_POSITION){
+        if (mPosition != ListView.INVALID_POSITION) {
             outState.putInt(SELECTED_KEY, mPosition);
         }
 
@@ -281,9 +310,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         // Using the URI scheme for showing a location found on a map.  This super-handy
         // intent can is detailed in the "Common Intents" page of Android's developer site:
         // http://developer.android.com/guide/components/intents-common.html#Maps
-        if ( null != mForecastAdapter ) {
+        if (null != mForecastAdapter) {
             Cursor c = mForecastAdapter.getCursor();
-            if ( null != c ) {
+            if (null != c) {
                 c.moveToPosition(0);
                 String posLat = c.getString(COL_COORD_LAT);
                 String posLong = c.getString(COL_COORD_LONG);
@@ -302,14 +331,41 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         }
     }
 
+    private void updateEmptyView() {
+        if (mForecastAdapter.getCount() == 0) {
+            TextView tv = (TextView) getView().findViewById(R.id.listview_forecast_empty);
+            if (null != tv) {
+                int message = R.string.empty_forecast_list;
+                @SunshineSyncAdapter.LocationStatus int location =
+                        Utility.getLocationStatus(getActivity());
+                switch (location) {
+                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_DOWN:
+                        message = R.string.empty_forecast_list_server_down;
+                        break;
+                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_INVALID:
+                        message = R.string.empty_forecast_list_server_error;
+                        break;
+                    case SunshineSyncAdapter.LOCATION_STATUS_INVALID:
+                        message = R.string.empty_forecast_list_invalid_location;
+                        break;
+                    default:
+                        if (!Utility.isNetworkAvailable(getActivity())) {
+                            message = R.string.empty_forecast_list_no_network;
+                        }
+                }
+                tv.setText(message);
+            }
+        }
+    }
+
     public class FetchDetailedWeatherTask extends AsyncTask<String, Void, List<String[]>> {
 
         private final String LOG_TAG = FetchDetailedWeatherTask.class.getSimpleName();
 
         @Override
-        protected void onPostExecute(List<String[]> result){
+        protected void onPostExecute(List<String[]> result) {
 
-            if (result!=null){
+            if (result != null) {
                 mDetailedForecast = result;
             }
         }
@@ -318,7 +374,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         @Override
         protected List<String[]> doInBackground(String... params) {
 
-            if (params.length == 0){
+            if (params.length == 0) {
                 return null;
             }
 
@@ -379,7 +435,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 // If the code didn't successfully get the weather data, there's no point in
                 // attempting to parse it.
                 return null;
-            } finally{
+            } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
                 }

@@ -163,8 +163,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             int weatherConditionId = data.getInt(COL_WEATHER_CONDITION_ID);
             //use weather art image
             mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherConditionId));
-            mIconView.setContentDescription(getActivity().getString(
-                    Utility.getContentDescription(weatherConditionId)));
 
             //date and day
             long date = data.getLong(COL_WEATHER_DATE);
@@ -174,17 +172,30 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             mDateView.setText(dateText);
 
             // description
-            String description = data.getString(COL_WEATHER_DESC);
+            String description = Utility.getStringForWeatherCondition(
+                    getActivity(), weatherConditionId);
             mDescriptionView.setText(description);
+            mDescriptionView.setContentDescription(getString(R.string.a11y_forecast, description));
+
+//            mIconView.setContentDescription(description);
+            // For accessibility, add a content description to the icon field. Because the ImageView
+            // is independently focusable, it's better to have a description of the image. Using
+            // null is appropriate when the image is purely decorative or when the image already
+            // has text describing it in the same UI component.
+            mIconView.setContentDescription(getString(R.string.a11y_forecast_icon, description));
 
             // high & low temperature
-            boolean isMetric = Utility.isMetric(getActivity());
+//            boolean isMetric = Utility.isMetric(getActivity());
 
-            double high = data.getDouble(COL_WEATHER_MAX_TEMP);
-            mHighTempView.setText(Utility.formatTemperature(getActivity(), high));
+            String high = Utility.formatTemperature(getActivity(),
+                    data.getDouble(COL_WEATHER_MAX_TEMP));
+            mHighTempView.setText(high);
+            mHighTempView.setContentDescription(getString(R.string.a11y_high_temp, high));
 
-            double low = data.getDouble(COL_WEATHER_MIN_TEMP);
-            mLowTempView.setText(Utility.formatTemperature(getActivity(), low));
+            String low = Utility.formatTemperature(getActivity(),
+                    data.getDouble(COL_WEATHER_MIN_TEMP));
+            mLowTempView.setText(low);
+            mLowTempView.setContentDescription(getString(R.string.a11y_low_temp, low));
 
             // humidity
             float humidity = data.getFloat(COL_WEATHER_HUMIDITY);
@@ -194,11 +205,13 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             float windSpeed = data.getFloat(COL_WEATHER_WIND_SPEED);
             float windDir = data.getFloat(COL_WEATHER_DEGREES);
             mWindView.update(windDir, Utility.getFormattedWindSpeed(getActivity(), windSpeed));
-//            mWindView.setText(Utility.getFormattedWind(getActivity(), windSpeed, windDir));
+            mWindView.setContentDescription(Utility.getFormattedWind(
+                    getActivity(), windSpeed, windDir));
 
             // pressure
             float pressure = data.getFloat(COL_WEATHER_PRESSURE);
             mPressureView.setText(getActivity().getString(R.string.format_pressure, pressure));
+            mPressureView.setContentDescription(mPressureView.getText());
 
             // share intent
             mForecast = String.format("%s - %s - %s/%s", dateText, description, high, low);

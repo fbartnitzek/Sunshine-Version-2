@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.android.sunshine.app.data.MyView;
 import com.example.android.sunshine.app.data.WeatherContract;
 
@@ -162,7 +163,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             // condition id for pic
             int weatherConditionId = data.getInt(COL_WEATHER_CONDITION_ID);
             //use weather art image
-            mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherConditionId));
+//            mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherConditionId));
+            Glide.with(this)
+                    .load(Utility.getArtUrlForWeatherCondition(getActivity(), weatherConditionId))
+                    .error(Utility.getArtResourceForWeatherCondition(weatherConditionId))
+                    .crossFade()
+                    .into(mIconView);
 
             //date and day
             long date = data.getLong(COL_WEATHER_DATE);

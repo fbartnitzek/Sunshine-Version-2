@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!-- RelativeLayout is a nice choice when we're playing with elevations because it allows us to
      flexibly place layouts all in the same drawing layer -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -52,5 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/weather_detail_container"
-        tools:layout="@android:layout/list_content" />
+        tools:layout="@android:layout/list_content"
+        android:choiceMode="singleChoice"
+        app:autoSelectView="true"/>
 </RelativeLayout>

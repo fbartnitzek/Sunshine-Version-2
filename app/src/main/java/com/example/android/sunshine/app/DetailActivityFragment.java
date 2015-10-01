@@ -33,10 +33,12 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
     static final String DETAIL_URI = "DETAIL_URI";
+    static final String DETAIL_TRANSITION_ANIMATION = "DTA";
 
 //    private ShareActionProvider mShareActionProvider;
     private String mForecast;
     private Uri mUri;
+    private boolean mTransitionAnimation;
 
     private static final int DETAIL_LOADER_ID = 0;
 
@@ -92,6 +94,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         Bundle args = getArguments();
         if (args != null){
             mUri = args.getParcelable(DETAIL_URI);
+            mTransitionAnimation = args.getBoolean(DetailActivityFragment.DETAIL_TRANSITION_ANIMATION, false);
         }
 
         mIconView = (ImageView) rootView.findViewById(R.id.detail_icon);
@@ -262,7 +265,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             Toolbar toolbarView = (Toolbar) getView().findViewById(R.id.toolbar);
 
             // We need to start the enter transition after the data has loaded
-            if (activity instanceof DetailActivity) {
+            if (mTransitionAnimation) {
                 activity.supportStartPostponedEnterTransition();
 
                 if (null != toolbarView) {

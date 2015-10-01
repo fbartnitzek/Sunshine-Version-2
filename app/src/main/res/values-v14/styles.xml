@@ -5,6 +5,10 @@
         <item name="android:actionBarStyle">@style/ActionBar.V14.Sunshine.NoTitle</item>
     </style>
 
+    <style name="AppTheme.Main" parent="@style/AppTheme" />
+
+    <style name="AppTheme.Details" parent="@style/AppTheme" />
+
     <!-- Settings activity action bar styles -->
     <style name="ActionBar.V14.Sunshine.NoTitle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/primary</item>

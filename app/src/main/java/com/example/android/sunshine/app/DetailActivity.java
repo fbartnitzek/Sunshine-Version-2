@@ -19,6 +19,7 @@ public class DetailActivity extends AppCompatActivity {
         // use uri from mainActivity to create detail fragment enriched with uri
         Bundle args = new Bundle();
         args.putParcelable(DetailActivityFragment.DETAIL_URI, getIntent().getData());
+        args.putBoolean(DetailActivityFragment.DETAIL_TRANSITION_ANIMATION, true);
 
         DetailActivityFragment fragment = new DetailActivityFragment();
         fragment.setArguments(args);
@@ -28,6 +29,9 @@ public class DetailActivity extends AppCompatActivity {
 //                    .add(R.id.weather_detail_container, new DetailActivityFragment())
                     .add(R.id.weather_detail_container, fragment)
                     .commit();
+
+            // Being here means we are in animation mode
+            supportPostponeEnterTransition();
         }
     }
 

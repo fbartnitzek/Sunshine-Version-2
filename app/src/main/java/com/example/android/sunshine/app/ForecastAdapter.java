@@ -106,12 +106,15 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         mCursor.moveToPosition(position);
         int weatherId = mCursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
         int defaultImage;
+        boolean useLongToday;
 
         // colorful for today, gray for other days
         if (getItemViewType(position) == VIEW_TYPE_TODAY) {
             defaultImage = Utility.getArtResourceForWeatherCondition(weatherId);
+            useLongToday = true;
         } else {
             defaultImage = Utility.getIconResourceForWeatherCondition(weatherId);
+            useLongToday = false;
         }
 
         if (Utility.usingLocalGraphics(mContext)) {
@@ -131,7 +134,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
 //        // date
         long dateInMillis = mCursor.getLong(ForecastFragment.COL_WEATHER_DATE);
-        forecastAdapterViewHolder.dateView.setText(Utility.getFriendlyDayString(mContext, dateInMillis));
+        forecastAdapterViewHolder.dateView.setText(Utility.getFriendlyDayString(mContext, dateInMillis, useLongToday));
 //
 //        //description
         String description = Utility.getStringForWeatherCondition(mContext, weatherId);

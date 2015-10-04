@@ -83,12 +83,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     static final int COL_COORD_LONG = 8;
 
     private List<String[]> mDetailedForecast = new ArrayList<>();
-    private int mPosition = RecyclerView.NO_POSITION;
+//    private int mPosition = RecyclerView.NO_POSITION;
 //    private ListView mListview;
     private RecyclerView mRecyclerView;
     private boolean mUseTodayLayout, mAutoSelectView;
     private int mChoiceMode;
     private boolean mHoldForTransition;
+    private long mInitialSelectedDate = -1;
 
     @Override
     public void onResume() {
@@ -241,7 +242,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                                         locationSetting, date),
                                 vh
                         );
-                mPosition = vh.getAdapterPosition();
+//                mPosition = vh.getAdapterPosition();
             }
         }, emptyView, mChoiceMode);
 
@@ -296,11 +297,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         // actually *lost*.
 
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(SELECTED_KEY)) {
-                // The Recycler View probably hasn't even been populated yet.  Actually perform the
-                // swapout in onLoadFinished.
-                mPosition = savedInstanceState.getInt(SELECTED_KEY);
-            }
+//            if (savedInstanceState.containsKey(SELECTED_KEY)) {
+//                // The Recycler View probably hasn't even been populated yet.  Actually perform the
+//                // swapout in onLoadFinished.
+//                mPosition = savedInstanceState.getInt(SELECTED_KEY);
+//            }
             mForecastAdapter.onRestoreInstanceState(savedInstanceState);
         }
 
@@ -347,9 +348,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mForecastAdapter.swapCursor(data);
 
-        if (mPosition != RecyclerView.NO_POSITION) {
-            mRecyclerView.smoothScrollToPosition(mPosition);
-        }
+//        if (mPosition != RecyclerView.NO_POSITION) {
+//            mRecyclerView.smoothScrollToPosition(mPosition);
+//        }
         updateEmptyView();
 
         if ( data.getCount() == 0 ) {
@@ -362,9 +363,32 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                     // we see Children.
                     if (mRecyclerView.getChildCount() > 0) {
                         mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-                        int itemPosition = mForecastAdapter.getSelectedItemPosition();
-                        if (RecyclerView.NO_POSITION == itemPosition) itemPosition = 0;
-                        RecyclerView.ViewHolder vh = mRecyclerView.findViewHolderForAdapterPosition(itemPosition);
+//                        int itemPosition = mForecastAdapter.getSelectedItemPosition();
+//                        if (RecyclerView.NO_POSITION == itemPosition) itemPosition = 0;
+//                        RecyclerView.ViewHolder vh = mRecyclerView.findViewHolderForAdapterPosition(itemPosition);
+//                        if (null != vh && mAutoSelectView) {
+//                            mForecastAdapter.selectView(vh);
+//                        }
+
+                        int position = mForecastAdapter.getSelectedItemPosition();
+                        if (position == RecyclerView.NO_POSITION && mInitialSelectedDate != -1) {
+                            Cursor data = mForecastAdapter.getCursor();
+                            int count = data.getCount();
+                            int dateColumn = data.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DATE);
+                            for (int i = 0; i < count; ++i) {
+                                data.moveToPosition(i);
+                                if (data.getLong(dateColumn) == mInitialSelectedDate) {
+                                    position = i;
+                                    break;
+                                }
+                            }
+                        }
+                        if (position == RecyclerView.NO_POSITION){
+                            position = 0;
+                        }
+                        // if we don't need to restart the loader and have the desired position, restore
+                        mRecyclerView.smoothScrollToPosition(position);
+                        RecyclerView.ViewHolder vh = mRecyclerView.findViewHolderForAdapterPosition(position);
                         if (null != vh && mAutoSelectView) {
                             mForecastAdapter.selectView(vh);
                         }
@@ -379,12 +403,16 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         }
     }
 
+    public void setInitialSelectedDate(long initialSelectedDate) {
+        mInitialSelectedDate = initialSelectedDate;
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         // store selected item - can be restored on rotation
-        if (mPosition != RecyclerView.NO_POSITION) {
-            outState.putInt(SELECTED_KEY, mPosition);
-        }
+//        if (mPosition != RecyclerView.NO_POSITION) {
+//            outState.putInt(SELECTED_KEY, mPosition);
+//        }
         mForecastAdapter.onSaveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }

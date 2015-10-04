@@ -190,4 +190,7 @@
     <!-- for shared element transitions -->
     <string name="detail_icon_transition_name" translatable="false">TN_DetailIcon</string>
 
+    <!-- Widget -->
+    <string name="title_widget_today">Sunshine Today</string>
+
 </resources>

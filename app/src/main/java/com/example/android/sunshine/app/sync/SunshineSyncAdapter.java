@@ -51,6 +51,8 @@ import java.util.concurrent.ExecutionException;
 
 public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     public final String LOG_TAG = SunshineSyncAdapter.class.getSimpleName();
+    public static final String ACTION_DATA_UPDATED =
+            "com.example.android.sunshine.app.ACTION_DATA_UPDATED";
 
     // Interval at which to sync with the weather, in milliseconds.
     // 60 seconds (1 minute) * 180 = 3 hours
@@ -346,6 +348,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                         WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
                         new String[] {Long.toString(dayTime.setJulianDay(julianStartDay -1))});
 
+                updateWidgets();
                 notifyWeather();
             }
 
@@ -359,6 +362,13 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             setLocationStatus(getContext(), LOCATION_STATUS_SERVER_INVALID);
         }
         return;
+    }
+
+    private void updateWidgets() {
+        Context ctx = getContext();
+        // only Sunshine app can receive broadcast
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED).setPackage(ctx.getPackageName());
+        ctx.sendBroadcast(dataUpdatedIntent);
     }
 
     private void notifyWeather() {

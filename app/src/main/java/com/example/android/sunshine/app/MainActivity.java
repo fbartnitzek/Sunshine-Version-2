@@ -31,7 +31,7 @@ import java.io.IOException;
 
 public class MainActivity extends ActionBarActivity implements ForecastFragment.Callback{
 
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = MainActivity.class.getName();
 
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -94,7 +94,8 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
 
         // If Google Play Services is not available, some features, such as GCM-powered weather
         // alerts, will not be available.
-        if (!checkPlayServices()) {
+        Log.v(LOG_TAG, "onCreate, " + "before checkPlayServices(), savedInstanceState = [" + savedInstanceState + "]");
+        if (checkPlayServices()) {
             mGcm = GoogleCloudMessaging.getInstance(this);
             String regId = getRegistrationId(this);
 
@@ -187,6 +188,7 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
 
         if (!checkPlayServices()) {
             // store regID as null
+            Log.v(LOG_TAG, "onResume, " + "checkPlayServices = true");
         }
 
         String location = Utility.getPreferredLocation(this);
@@ -325,7 +327,7 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
             protected Void doInBackground(Void... params) {
                 String msg = "";
 
-                Log.v(LOG_TAG, "doInBackground, " + "params = [" + params + "]");
+                Log.v(LOG_TAG, "registerInBackground, " + "params = [" + params + "]");
                 try {
                     if (mGcm == null) {
                         mGcm = GoogleCloudMessaging.getInstance(context);

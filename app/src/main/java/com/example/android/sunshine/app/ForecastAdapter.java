@@ -20,7 +20,7 @@ import com.example.android.sunshine.app.data.WeatherContract;
  */
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapterViewHolder> {
 
-    private static final String LOG_TAG = ForecastAdapter.class.getSimpleName();
+    private static final String LOG_TAG = ForecastAdapter.class.getName();
     //    public static final int VIEW_TYPE_COUNT = 2;
     private final int VIEW_TYPE_TODAY = 0;
     private final int VIEW_TYPE_FUTURE_DAY = 1;

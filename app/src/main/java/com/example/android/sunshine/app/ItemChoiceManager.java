@@ -30,7 +30,7 @@ import android.widget.Checkable;
  * doesn't take advantage of new adapter features to track changes in the underlying data.
  */
 public class ItemChoiceManager {
-    private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String LOG_TAG = MainActivity.class.getName();
     private final String SELECTED_ITEMS_KEY = "SIK";
     private int mChoiceMode;
 

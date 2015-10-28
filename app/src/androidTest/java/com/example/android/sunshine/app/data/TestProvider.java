@@ -39,7 +39,7 @@ import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
  */
 public class TestProvider extends AndroidTestCase {
 
-    public static final String LOG_TAG = TestProvider.class.getSimpleName();
+    public static final String LOG_TAG = TestProvider.class.getName();
 
     /*
        This helper function deletes all records from both database tables using the ContentProvider.

@@ -19,7 +19,7 @@ import java.util.TimeZone;
  * Created by frank on 18.06.15.
  */
 class JsonWeatherExtractor {
-    private static final String LOG_TAG = JsonWeatherExtractor.class.getSimpleName();
+    private static final String LOG_TAG = JsonWeatherExtractor.class.getName();
 
     public static final String DAILY_QUERY_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
     public static final String DETAIL_QUERY_URL = "http://api.openweathermap.org/data/2.5/forecast";

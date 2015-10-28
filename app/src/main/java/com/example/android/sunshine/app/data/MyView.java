@@ -13,7 +13,7 @@ import android.view.accessibility.AccessibilityManager;
  * Created by frank on 31.07.15.
  */
 public class MyView extends View {
-    private static final String LOG_TAG = MyView.class.getSimpleName();
+    private static final String LOG_TAG = MyView.class.getName();
     private double mDirection;
     private String mText;
     private boolean mUpdated = false;

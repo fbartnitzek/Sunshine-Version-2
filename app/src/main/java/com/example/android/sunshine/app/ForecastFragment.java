@@ -50,7 +50,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
 
     private static final String SELECTED_KEY = "SELECTED_POSITION";
-    private static final String LOG_TAG = ForecastFragment.class.getSimpleName();
+    private static final String LOG_TAG = ForecastFragment.class.getName();
     private ForecastAdapter mForecastAdapter;
     private static final int FORECAST_LOADER_ID = 123;
 
@@ -481,7 +481,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     public class FetchDetailedWeatherTask extends AsyncTask<String, Void, List<String[]>> {
 
-        private final String LOG_TAG = FetchDetailedWeatherTask.class.getSimpleName();
+        private final String LOG_TAG = FetchDetailedWeatherTask.class.getName();
 
         @Override
         protected void onPostExecute(List<String[]> result) {

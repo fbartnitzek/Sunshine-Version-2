@@ -24,7 +24,7 @@ import java.util.ArrayList;
  */
 public class DetailListActivityFragment extends Fragment {
 
-    private static final String LOG_TAG = DetailListActivityFragment.class.getSimpleName();
+    private static final String LOG_TAG = DetailListActivityFragment.class.getName();
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
 
     private ArrayAdapter<String> mDetailedForecastAdapter;
